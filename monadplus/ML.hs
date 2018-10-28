@@ -1,4 +1,4 @@
-{-# LANGUAGE ViewPatterns, DeriveFunctor #-}
+{-# LANGUAGE ViewPatterns, DeriveFunctor, LambdaCase #-}
 module ML (ML, observeAllT, observeT, observeManyT) where
 
 import Control.Monad
@@ -20,14 +20,14 @@ instance Monad m => Applicative (ML m) where
 
 instance Monad m => Monad (ML m) where
   return = pure
-  (toView -> m) >>= f = fromView $ m >>= \x -> case x of
+  (toView -> m) >>= f = fromView $ m >>= \case 
        Nothing    -> return Nothing
        Just (h,t) -> toView (f h `mplus` (t >>= f))
   fail _ = mzero
 
 instance Monad m => MonadPlus (ML m) where
   mzero = fromView (return Nothing)
-  mplus (toView -> a) b = fromView $ a >>= \x -> case x of
+  mplus (toView -> a) b = fromView $ a >>= \case
      Nothing    -> toView b
      Just (h,t) -> return (Just (h,t `mplus` b))
 
@@ -43,7 +43,7 @@ instance Monad m => MonadLogic (ML m) where
 
 observeAllT :: Monad m => ML m a -> m [a]
 observeAllT (toView -> m) = m >>= get where
-      get (Just (a,t)) = liftM (a :) (observeAllT t)
+      get (Just (a,t)) = fmap (a :) (observeAllT t)
       get _            = return []
 
 observeT :: Monad m => ML m a -> m a

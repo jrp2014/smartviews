@@ -1,10 +1,6 @@
-{-# LANGUAGE ExistentialQuantification,
-             DeriveFunctor,
-             ViewPatterns,
-             FlexibleInstances,
-             MultiParamTypeClasses
-             #-}
-{-# OPTIONS  -fno-warn-amp #-}
+ {-# LANGUAGE ExistentialQuantification, FlexibleInstances,
+    MultiParamTypeClasses #-}
+
 
 module SFree (Free, FreeMonadView(..), toView) where
 
@@ -27,7 +23,7 @@ instance Monad (Free f) where
   m >>= f = m :>>= f
 
 instance MonadFree f (Free f) where
-  wrap v = FCon v
+  wrap = FCon
 
 lift :: Functor f => f x -> Free f x
 lift x = FCon (fmap return x)

@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, FlexibleContexts #-}
+{-# LANGUAGE RankNTypes, FlexibleContexts, LambdaCase #-}
 
 module Main where
 
@@ -44,7 +44,7 @@ observeTs f = [
 -- Benchmark 1 : interleave
 
 mchoose :: MonadPlus m => [a] -> m a
-mchoose l = foldr mplus mzero $ map return l
+mchoose = foldr (mplus . return) mzero
 
 bench1 :: MonadLogic m => Int -> m Int
 bench1 n = mchoose [1..n] `interleave` mchoose [n,n-1..1]
@@ -56,9 +56,9 @@ bench1s = ("interleave", observeAllTs bench1)
 
 seqN :: MonadLogic m => Int -> m a -> m [a]
 seqN n m | n == 0     = return []
-         | otherwise  = msplit m >>= \x -> case x of
+         | otherwise  = msplit m >>= \case
                           Nothing    -> return []
-                          Just (a,m) -> liftM (a:) $ seqN (n-1) m
+                          Just (a,m) -> (a:) <$> seqN (n-1) m
 
 nats :: MonadPlus m => m Int
 nats = natsFrom 0 where
