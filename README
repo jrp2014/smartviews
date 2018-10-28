@@ -1,0 +1,11 @@
+First clone the reflectionwithoutremorse repository from github:
+
+  git clone https://github.com/atzeus/reflectionwithoutremorse.git monadplus/reflectionwithoutremorse
+
+Then, the binaries can be generated using cabal:
+
+  cabal new-build
+
+In each folder (list, monad, monadplus), a Makefile is avaible to run the benchmarks:
+
+  make benchmark
